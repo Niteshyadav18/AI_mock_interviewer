@@ -89,7 +89,6 @@ export async function signIn(params: SignInParams) {
     }
 }
 
-// Get current user from session cookie
 export async function getCurrentUser(): Promise<User | null> {
     const cookieStore = await cookies();
 
@@ -118,9 +117,26 @@ export async function getCurrentUser(): Promise<User | null> {
     }
 }
 
+// Check if user is authenticated
+export async function isAuthenticated() {
+    const user = await getCurrentUser();
+    return !!user;
+}
 
- export async function isAuthenticated(){
-    const user = await getCurrentUser()
 
-     return !!user;
- }
+
+
+
+
+export async function getInterviewByUserId(userId: string): Promise<Interview[] | null>{
+    const interviews = await db
+        .collection("interview")
+        .where("userid", "==", userId)
+        .orderBy("createdAt", "desc")
+        .get()
+
+    return interviews.docs.map((doc) => ({
+        id:doc.id,
+        ...doc.data()
+    }))as Interview[];
+}

@@ -1,16 +1,13 @@
-import {generateText} from "ai";
-import {google} from "@ai-sdk/google";
-import {getRandomInterviewCover} from "@/lib/utils";
-import {db} from "@/firebase/admin";
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 
-export async function GET(){
-    return Response.json({success: true, data: 'Thank You'},{status:200});
-}
+import { db } from "@/firebase/admin";
+import { getRandomInterviewCover } from "@/lib/utils";
 
-export async function POST(request:Request){
-    const {type, role, level, techstack, amount, userid,} =await request.json()
+export async function POST(request: Request) {
+    const { type, role, level, techstack, amount, userid } = await request.json();
 
-    try{
+    try {
         const { text: questions } = await generateText({
             model: google("gemini-2.0-flash-001"),
             prompt: `Prepare questions for a job interview.
@@ -27,22 +24,28 @@ export async function POST(request:Request){
         Thank you! <3
     `,
         });
-        const interview ={
-            role,type,level,
-            techstack:techstack.split(','),
+
+        const interview = {
+            role: role,
+            type: type,
+            level: level,
+            techstack: techstack.split(","),
             questions: JSON.parse(questions),
-            userid: userid,
+            userId: userid,
             finalized: true,
-            coverImage:getRandomInterviewCover(),
-            createdAt: new Date().toISOString()
-        }
-        await db.collection("interview").add(interview)
-        return Response.json({success: true}, {status: 200})
+            coverImage: getRandomInterviewCover(),
+            createdAt: new Date().toISOString(),
+        };
 
-    }catch (error){
-        console.log(error)
+        await db.collection("interviews").add(interview);
 
-        return Response.json({success: false, error},{status:500})
-        }
+        return Response.json({ success: true }, { status: 200 });
+    } catch (error) {
+        console.error("Error:", error);
+        return Response.json({ success: false, error: error }, { status: 500 });
+    }
+}
 
+export async function GET() {
+    return Response.json({ success: true, data: "Thank you!" }, { status: 200 });
 }
