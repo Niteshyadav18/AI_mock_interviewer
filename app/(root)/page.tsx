@@ -67,9 +67,7 @@ const Page = async () => {
                             ))) : (
                             <p>There are no new Interviews available</p>
                         )}
-                    {/*{dummyInterviews.map((interview) => (*/}
-                    {/*    <InterviewCard {...interview} key={interview.id}/>*/}
-                    {/*))}*/}
+
                 </div>
 
             </section>
